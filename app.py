@@ -2,8 +2,10 @@ from flask import Flask, request
 import os
 import uuid
 from werkzeug.utils import secure_filename
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Configuration for file uploads
 app.config['UPLOAD_FOLDER'] = 'images'
@@ -39,7 +41,7 @@ def upload():
             return "Invalid file format.", 400
 
     # Return a success message
-    return f"Email: {email} Files uploaded successfully on folder {folder_name} and are located in {folder_path}.", 200
+    return f"Files uploaded successfully on Project ID {folder_name}  Email: {email}", 200
 
 
 if __name__ == '__main__':
