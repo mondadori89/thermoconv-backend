@@ -21,8 +21,8 @@ app.config['OUTPUTS_FOLDER'] = 'outputs'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'tiff'}
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587  # Gmail's TLS port
-app.config['MAIL_USERNAME'] = 'thermoconv@gmail.com'
-app.config['MAIL_PASSWORD'] = 'klisyfwmqftyahrz'
+app.config['MAIL_USERNAME'] = 'thermoconv@gmail.com'    # Put on an env file
+app.config['MAIL_PASSWORD'] = 'klisyfwmqftyahrz'        # Put on an env file
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
@@ -91,7 +91,7 @@ def convert():
 
     # Send the zip file via email
     with app.app_context():
-        msg = Message('Image Conversion Results', sender='thermoconv@gmail.com', recipients=[email])
+        msg = Message(f'Image Conversion Results ID: {conversion_id}', sender='thermoconv@gmail.com', recipients=[email])
         msg.body = 'Please find the converted images attached.'
         with app.open_resource(zip_file_path) as attachment:
             msg.attach(conversion_id + '_outputs.zip', 'application/zip', attachment.read())
