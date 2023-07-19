@@ -28,4 +28,5 @@ dist-ssr
 
 # images
 images/*
+inputs/*
 outputs/*
