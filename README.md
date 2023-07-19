@@ -107,6 +107,8 @@ sudo yum install -y nginx
 
 
 
+sudo apt install python3-pip
 
+pip install --upgrade pip
 docker build -t thermoconv-backend .
 docker run --name thermoconv-backend -itd -p 5000:5000 thermoconv-backend 

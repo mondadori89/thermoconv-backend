@@ -17,12 +17,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire backend directory to the container
 COPY . /backend/
 
-# Set environment variables (if needed)
-# ENV MY_ENV_VARIABLE=value
-
 # Create and activate the virtual environment
-RUN python -m venv /venv
-ENV PATH="/venv/bin:$PATH"
+# RUN python -m venv /venv
+# ENV PATH="/venv/bin:$PATH"
+
+# Set environment variables (if needed)
 ENV FLASK_ENV=aws
 
 # Expose the port on which your Flask app is listening (replace 5000 with your app's port)
