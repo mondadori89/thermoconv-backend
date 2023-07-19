@@ -21,8 +21,9 @@ COPY . /backend/
 # ENV MY_ENV_VARIABLE=value
 
 # Create and activate the virtual environment
-# RUN python -m venv /venv
-# ENV PATH="/venv/bin:$PATH"
+RUN python -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+ENV FLASK_ENV=aws
 
 # Expose the port on which your Flask app is listening (replace 5000 with your app's port)
 EXPOSE 5000

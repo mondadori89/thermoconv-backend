@@ -8,7 +8,9 @@ import zipfile
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from converter.converter import convert_jpg_tiff
+from dotenv import load_dotenv
 
+load_dotenv()
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__)
@@ -107,7 +109,12 @@ def convert():
     return response_data, 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if os.environ.get('FLASK_ENV') == 'local':
+        # Local environment
+        app.run(debug=True)
+    else:
+        # AWS instance or any other environment
+        app.run(host='0.0.0.0', port=5000)
 
 
 

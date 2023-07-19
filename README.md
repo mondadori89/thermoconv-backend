@@ -103,3 +103,8 @@ sudo yum install -y nginx
 - Make sure your backend Flask app listens on the appropriate IP and port (e.g., 0.0.0.0:5000).
 - Make sure your frontend app is configured to use the backend API's URL appropriately (e.g., "http://backend:5000/api" if using Docker Compose).
 - Restart Nginx and your containers if necessary.
+
+
+
+docker build -t thermoconv-backend .
+docker run --name thermoconv-backend -itd -p 5000:5000 thermoconv-backend 
