@@ -33,8 +33,19 @@ python3 app.py
 - [X] Set up the email sending of results
 
 
+## Deploy
+On the aws instance, the code is on "thermoconv-backend" folder
+```bash
+cd thermoconv-backend
+git pull origin main                                                          # to get the code updated
+docker rm -f <container_id>                                                   # remove old ontainer
+docker rmi -f <image_id>                                                      # remove old image
+docker build -t thermoconv-backend .                                          # build the new image
+docker run --name thermoconv-backend -itd -p 5000:5000 thermoconv-backend     # run the new container
+```
 
-## Deploy on AWS
+
+## Deploy from zero on AWS
 
 1. Setup AWS Instance:
 - Launch an EC2 instance on AWS. Make sure to select an appropriate Amazon Machine Image (AMI) based on your needs (e.g., Amazon Linux, Ubuntu, etc.).
@@ -104,11 +115,11 @@ sudo yum install -y nginx
 - Make sure your frontend app is configured to use the backend API's URL appropriately (e.g., "http://backend:5000/api" if using Docker Compose).
 - Restart Nginx and your containers if necessary.
 
+## Docker network
+- To connect the 2 containers in the aws instance
+```bash
+docker network create docker_network
+```
 
 
 
-sudo apt install python3-pip
-
-pip install --upgrade pip
-docker build -t thermoconv-backend .
-docker run --name thermoconv-backend -itd -p 5000:5000 thermoconv-backend 

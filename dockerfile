@@ -6,9 +6,9 @@ WORKDIR /backend
 
 # Install system dependencies (if needed)
 # For example, if your backend requires additional system libraries or packages
-# RUN sudo apt-get install build-essential
-# RUN sudo apt update
-# RUN sudo apt install libimage-exiftool-perl
+RUN sudo apt-get install build-essential
+RUN sudo apt update
+RUN sudo apt install libimage-exiftool-perl
 
 # Copy the requirements.txt and install Python dependencies
 COPY requirements.txt /backend/
