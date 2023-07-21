@@ -9,6 +9,9 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from converter.converter import convert_jpg_tiff
 from dotenv import load_dotenv
+import stripe
+
+stripe.api_key = "sk_test_51NWOG7EdrJuCV8vEHlvkZOW4HC01y4zE2fOUFwO56lXcac64tRmbHEbbRoWR3o4atNzB40tUPvZruqol5Fhq1Ms000BqYb8BLF"
 
 load_dotenv()
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -68,10 +71,43 @@ def upload():
     return response_data, 200
 
 
+@app.route('/create_checkout_session', methods=['POST'])
+def create_checkout_session():
+    email = request.form['email']
+    conversion_id = request.form['conversion_id']
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': 'Image Conversion',
+                    },
+                    'unit_amount': 1000,  # Replace with your actual price
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url='http://localhost:5173/',  # Replace with your success URL
+            cancel_url='http://google.com',  # Replace with your cancel URL
+        )
+        return {'id': session.id}
+    except Exception as e:
+        return {'error': str(e)}
+
+
 @app.route('/convert', methods=['POST'])
 def convert():
     email = request.form['email']
     conversion_id = request.form['conversion_id']
+    session_id = request.form['session_id']  # Get the session ID from the request
+
+    session = stripe.checkout.Session.retrieve(session_id)
+
+    if session.payment_status != 'paid':
+        return {'error': 'Payment not successful.'}, 400
 
     inputs_folder_path = os.path.join(app.config['IMAGES_FOLDER'], email, conversion_id, app.config['INPUTS_FOLDER'])
     output_folder_path = os.path.join(app.config['IMAGES_FOLDER'], email, conversion_id, app.config['OUTPUTS_FOLDER'])

@@ -32,4 +32,4 @@ uuid==1.30
 wcwidth==0.2.6
 Werkzeug==2.3.6
 zipp==3.16.2
-
+stripe

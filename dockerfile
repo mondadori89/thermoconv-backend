@@ -4,11 +4,11 @@ FROM python:3.8
 # Set the working directory inside the container
 WORKDIR /backend
 
-# Install system dependencies (if needed)
-# For example, if your backend requires additional system libraries or packages
-RUN sudo apt-get install build-essential
-RUN sudo apt update
-RUN sudo apt install libimage-exiftool-perl
+# Install system dependencies
+RUN apt-get update
+RUN apt-get install build-essential
+RUN apt-get install -y libimage-exiftool-perl
+
 
 # Copy the requirements.txt and install Python dependencies
 COPY requirements.txt /backend/
