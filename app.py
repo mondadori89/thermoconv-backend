@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_mail import Mail, Message
 import os
 import sys
+import time
 import uuid
 import shutil
 import zipfile
@@ -10,14 +11,25 @@ from flask_cors import CORS
 from converter.converter import convert_jpg_tiff
 from dotenv import load_dotenv
 import stripe
-
-stripe.api_key = "sk_test_51NWOG7EdrJuCV8vEHlvkZOW4HC01y4zE2fOUFwO56lXcac64tRmbHEbbRoWR3o4atNzB40tUPvZruqol5Fhq1Ms000BqYb8BLF"
-
-load_dotenv()
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import boto3
 
 app = Flask(__name__)
 CORS(app)
+
+# ENV variables:
+load_dotenv()
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+flask_env = os.environ.get('FLASK_ENV')
+aws_access_key = os.environ.get('AWS_ACCESS_KEY')
+aws_secret_key = os.environ.get('AWS_SECRET_KEY')
+stripe_api_key_dev = os.environ.get('STRIPE_API_KEY_DEV')
+s3_bucket = os.environ.get('S3_BUCKET')
+
+# S3 set-up
+s3 = boto3.client('s3', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key, region_name='us-west-2')
+
+# Stripe set-up
+stripe.api_key = "stripe_api_key_dev"
 
 # Configuration for file uploads
 app.config['IMAGES_FOLDER'] = 'images'
@@ -46,26 +58,26 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload():
     email = request.form['email']
-    image_files = request.files.getlist('imageFiles')
+    conversion_id = request.form['conversion_id']
+    image_file = request.files['imageFile']
 
     # Generate a unique folder name based on the email using UUID
-    conversion_id = str(uuid.uuid4())
     inputs_folder_path = os.path.join(app.config['IMAGES_FOLDER'], email, conversion_id, app.config['INPUTS_FOLDER'])
     
     # Create the folder if it doesn't exist
     os.makedirs(inputs_folder_path, exist_ok=True)
 
     # Save each image file to the folder
-    for image_file in image_files:
-        if image_file and allowed_file(image_file.filename):
-            filename = secure_filename(image_file.filename)
-            image_file.save(os.path.join(inputs_folder_path, filename))
-        else:
-            return "Invalid file format.", 400
+    print(f'Uploading: Email: {email} - ProjectID: {conversion_id} - Image: {image_file}')
+    if image_file and allowed_file(image_file.filename):
+        filename = secure_filename(image_file.filename)
+        # time.sleep(2)
+        s3.upload_fileobj(image_file, s3_bucket, os.path.join(inputs_folder_path, filename))
+    else:
+        return "Invalid file format.", 400
 
     response_data = {
         "msg": f"Files uploaded successfully on Project ID {conversion_id}  Email: {email}",
-        "conversion_id": conversion_id
     }
     # Return response_data
     return response_data, 200
@@ -144,8 +156,9 @@ def convert():
     }
     return response_data, 200
 
+
 if __name__ == '__main__':
-    if os.environ.get('FLASK_ENV') == 'local':
+    if flask_env == 'local':
         # Local environment
         app.run(debug=True)
     else:
