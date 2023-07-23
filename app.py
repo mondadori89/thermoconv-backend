@@ -29,7 +29,7 @@ s3_bucket = os.environ.get('S3_BUCKET')
 s3 = boto3.client('s3', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key, region_name='us-west-2')
 
 # Stripe set-up
-stripe.api_key = "stripe_api_key_dev"
+stripe.api_key = stripe_api_key_dev
 
 # Configuration for file uploads
 app.config['IMAGES_FOLDER'] = 'images'
