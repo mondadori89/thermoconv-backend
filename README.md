@@ -74,16 +74,16 @@ sudo usermod -aG docker ec2-user  # Add the current user to the docker group (op
 - Build the Docker image on your local machine:
 ```bash
 docker build -t my_backend_image .
-Push the image to a container registry (e.g., Amazon ECR, Docker Hub, etc.) or use AWS ECR to create a repository and push your image to it.
+# Push the image to a container registry (e.g., Amazon ECR, Docker Hub, etc.) or use AWS ECR to create a repository and push your image to it.
 ```
 
 4. Frontend Dockerization:
-- In your frontend repository, create a Dockerfile to describe the Docker image for your Svelte app.
+- In your frontend repository, create a Dockerfile to describe the Docker image for your Frontend app.
 - Build the Docker image on your local machine:
 ```bash
 docker build -t my_frontend_image .
+# Push the image to a container registry (e.g., Amazon ECR, Docker Hub, etc.) or use AWS ECR to create a repository and push your image to it.
 ```
-Push the image to a container registry (e.g., Amazon ECR, Docker Hub, etc.) or use AWS ECR to create a repository and push your image to it.
 
 5. Docker Compose (optional):
 To manage both backend and frontend containers easily, you can use Docker Compose. Create a docker-compose.yml file in your AWS instance to define your services.
