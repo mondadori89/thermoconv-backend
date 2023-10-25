@@ -27,7 +27,8 @@ dist-ssr
 .venv
 
 # env
-#.env
+.env
+.envi
 
 # images
 images
