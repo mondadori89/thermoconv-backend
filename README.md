@@ -35,11 +35,9 @@ python3 app.py
 - [X] Set up domain and point to aws instance IP
   - [X] Buy domain
   - [X] Connect domain
-- [X] Set up payment system
+- [ ] Set up database for the ids/orders/clients/
+- [ ] Set up Stripe and the database connection
 - [ ] Set up S3 to receive the zip file and get a download link to send on email
-- [ ] Figure out a way to keep the front and back alive while the upload/convertion happens
-  - [ ] Have a upload progress feedback to frontend
-  - [ ] Have a conversion progress feedback to frontend
 - [ ] Set up SSL
 
 ## Deploy
