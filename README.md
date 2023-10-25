@@ -19,6 +19,7 @@ pip install -r requirements.txt             # Installing dependencies
 
 Run:
 ```bash
+source ./.venv/bin/activate
 python3 app.py
 ```
 

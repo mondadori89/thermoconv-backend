@@ -25,9 +25,12 @@ dist-ssr
 
 # venv
 .venv
-.env
+
+# env
+#.env
 
 # images
+images
 images/*
 inputs/*
 outputs/*
