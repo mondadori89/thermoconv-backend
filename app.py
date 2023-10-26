@@ -89,9 +89,9 @@ def create_checkout_session():
     conversion_id = request.form['conversion_id']
 
     try:
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types = ['card'],
+            line_items = [{
                 'price_data': {
                     'currency': 'usd',
                     'product_data': {
@@ -101,11 +101,19 @@ def create_checkout_session():
                 },
                 'quantity': 1,
             }],
-            mode='payment',
-            success_url='http://localhost:5173/',  # Replace with your success URL
-            cancel_url='http://google.com',  # Replace with your cancel URL
+            customer_email = email,
+            mode = 'payment',
+            success_url = 'http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}',  # Replace with your success URL
+            cancel_url = 'http://localhost:5173/',  # Replace with your cancel URL
         )
-        return {'id': session.id}
+
+        response_data = {
+            "msg": f"checkout session generated.",
+            "session_url": checkout_session.url
+        }
+
+        return response_data, 200
+    
     except Exception as e:
         return {'error': str(e)}
 
