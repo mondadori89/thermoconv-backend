@@ -19,8 +19,12 @@ pip install -r requirements.txt             # Installing dependencies
 
 Run:
 ```bash
+# Activate venv:
 source ./.venv/bin/activate
+# Run:
 python3 app.py
+# Or for hot reloading:
+flask run --reload
 ```
 
 
@@ -35,10 +39,10 @@ python3 app.py
 - [X] Set up domain and point to aws instance IP
   - [X] Buy domain
   - [X] Connect domain
-- [o] Set up Stripe, after the payment do the conversion
-- [ ] Set up S3 to receive the zip file and get a download link to send on email
-- [ ] Set up database for the ids/orders/clients/
-- [ ] Set up Stripe and the database connection
+- [X] Set up Stripe, after the payment do the conversion
+- [X] Set up S3 to receive the zip file and get a download link to send on email
+- [ ] Set up database table for the convertion_ids
+- [ ] Check if the convertion already exists before starting
 - [ ] Set up SSL
 
 ## Deploy

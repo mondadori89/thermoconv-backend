@@ -22,6 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+__pycache__
 
 # venv
 .venv
@@ -32,3 +33,4 @@ images
 images/*
 inputs/*
 outputs/*
+

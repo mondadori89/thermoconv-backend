@@ -22,14 +22,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 flask_env = os.environ.get('FLASK_ENV')
 aws_access_key = os.environ.get('AWS_ACCESS_KEY')
 aws_secret_key = os.environ.get('AWS_SECRET_KEY')
-stripe_api_key_dev = os.environ.get('STRIPE_API_KEY_DEV')
+stripe_api_key = os.environ.get('STRIPE_API_KEY')
 s3_bucket = os.environ.get('S3_BUCKET')
+FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL') 
 
 # S3 set-up
 s3 = boto3.client('s3', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key, region_name='us-west-2')
 
 # Stripe set-up
-stripe.api_key = stripe_api_key_dev
+stripe.api_key = stripe_api_key
 
 # Configuration for file uploads
 app.config['IMAGES_FOLDER'] = 'images'
@@ -38,12 +39,14 @@ app.config['OUTPUTS_FOLDER'] = 'outputs'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'tiff'}
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587  # Gmail's TLS port
-app.config['MAIL_USERNAME'] = 'thermoconv@gmail.com'    # Put on an env file
-app.config['MAIL_PASSWORD'] = 'klisyfwmqftyahrz'        # Put on an env file
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
 mail = Mail(app)
+
+print('\n Up and running \n')
 
 # helper function to check if the file has an allowed extension
 def allowed_file(filename):
@@ -83,6 +86,11 @@ def upload():
 def create_checkout_session():
     email = request.form['email']
     conversion_id = request.form['conversion_id']
+    conversion_price = request.form['conversionPrice']
+    conversion_price_in_cents = int(round(float(conversion_price) * 100))
+
+    if conversion_price_in_cents < 100 :
+        conversion_price_in_cents = 100
 
     try:
         checkout_session = stripe.checkout.Session.create(
@@ -93,22 +101,22 @@ def create_checkout_session():
                     'product_data': {
                         'name': 'Image Conversion',
                     },
-                    'unit_amount': 1000,  # Replace with your actual price
+                    'unit_amount': conversion_price_in_cents,
                 },
                 'quantity': 1,
             }],
             customer_email = email,
             metadata = { "conversion_id": conversion_id },
             mode = 'payment',
-            success_url = 'http://localhost:5173/convert?session_id={CHECKOUT_SESSION_ID}',  # Replace with your success URL
-            cancel_url = 'http://localhost:5173/',  # Replace with your cancel URL
+            success_url = FRONTEND_BASE_URL + "convert?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url = FRONTEND_BASE_URL,  # Replace with your cancel URL
         )
 
         response_data = {
             "msg": f"checkout session generated.",
             "session_url": checkout_session.url
         }
-
+        
         return response_data, 200
     
     except Exception as e:
@@ -152,6 +160,7 @@ def convert():
     os.makedirs(output_folder_path, exist_ok=True)
 
     # Download input images from S3
+    print(f'Start: Download files from S3. Email: {email}, conversion_id: {conversion_id}')
     input_files_list = s3.list_objects(Bucket=s3_bucket, Prefix=inputs_folder_path)
 
     if 'Contents' not in input_files_list:
@@ -165,6 +174,7 @@ def convert():
         if obj['Size'] == 0:
             continue
         
+        print(f'Downloading file: {file_name}')
         s3.download_file(s3_bucket, obj['Key'], file_path)
 
     # Convert images from the input_folder to the output_folder
